@@ -2,7 +2,8 @@ package application;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
+
+import javax.swing.JOptionPane;
 
 import entities.Manifestacao;
 
@@ -10,105 +11,97 @@ public class Programa {
 
 	public static void main(String[] args) throws Exception {
 		Manifestacao manifestacao;
-		Scanner scanner = new Scanner(System.in);
 		List<Manifestacao> manifestacoes = new ArrayList<Manifestacao>();
+		Object[] opcoes = { "Listar todas as manifestações", "Adicionar uma nova manifestação",
+				"Pesquisar uma manifestação por código", "Remover uma manifestação pelo código", "Sair" };
 
-		int opcao = 0;
+		Object opcao = "";
 
-		System.out.println("Bem-vindo à ouvidora\n");
+		JOptionPane.showMessageDialog(null, "Bem-vindo à ouvidoria.");
 
 		do {
+			opcao = JOptionPane.showInputDialog(null, "Escolha uma opção", "Opções", JOptionPane.INFORMATION_MESSAGE,
+					null, opcoes, opcoes[0]);
 
-			Menu();
-			opcao = scanner.nextInt();
-
-			if (opcao == 1) {
-
-				System.out.println("Todas as manifestações: ");
-
+			if (opcao.equals("Listar todas as manifestações")) {
 				if (manifestacoes.isEmpty()) {
-					System.out.println("Sem manifestações na ouvidoria.");
-					Thread.sleep(3000);
+					JOptionPane.showMessageDialog(null, "Sem manifestações na ouvidoria.", "Alerta",
+							JOptionPane.ERROR_MESSAGE);
 				} else {
+					StringBuilder sb = new StringBuilder();
+
 					for (Manifestacao tarefa : manifestacoes) {
-						System.out.println("1. " + tarefa);
+						sb.append(tarefa).append("\n");
 					}
-					Thread.sleep(5000);
+					JOptionPane.showMessageDialog(null, sb.toString(), "Manifestações: ",
+							JOptionPane.INFORMATION_MESSAGE);
+
 				}
 
-			} else if (opcao == 2) {
+			} else if (opcao.equals("Adicionar uma nova manifestação")) {
 
-				System.out.println("Nova manifestação");
+				int codigo = Integer.parseInt(JOptionPane.showInputDialog(null, "Código: "));
 
-				System.out.println("Código: ");
-				int codigo = scanner.nextInt();
-
-				scanner.nextLine();
-
-				System.out.println("Adicione uma nova manifestação: ");
-				String manifestacaoDado = scanner.nextLine();
+				String manifestacaoDado = JOptionPane.showInputDialog(null, "Adicione uma nova manifestação: ");
 
 				manifestacao = new Manifestacao(codigo, manifestacaoDado);
 				manifestacoes.add(manifestacao);
 
-				System.out.println("Manifestação adicionada com sucesso!");
-				Thread.sleep(2000);
+				JOptionPane.showMessageDialog(null, "Manifestação adicionada com sucesso!");
 
-			} else if (opcao == 3) {
+			} else if (opcao.equals("Pesquisar uma manifestação por código")) {
 
-				System.out.println("Pesquise uma manifestação por código\n");
-				System.out.println("Digite o código da manifestacao  ");
-				int codigo = scanner.nextInt();
+				if (manifestacoes.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Adicione primeiro manifestações para pesquisar.", "Alerta",
+							JOptionPane.ERROR_MESSAGE);
 
-				boolean temOuNaoTem = manifestacoes.stream().anyMatch(p -> p.getCodigo() == codigo);
-
-				if (temOuNaoTem) {
-
-					for (int i = 0; i < manifestacoes.size(); i++) {
-						if (manifestacoes.get(i).getCodigo() == codigo) {
-							System.out.println(manifestacoes.get(i));
-						}
-					}
 				} else {
-					System.out.println("Manifestação sem código correspondente.");
+					int codigo = Integer.parseInt(JOptionPane.showInputDialog("Digite o código da manifestação"));
+
+					boolean temOuNaoTem = manifestacoes.stream().anyMatch(p -> p.getCodigo() == codigo);
+
+					if (temOuNaoTem) {
+						for (int i = 0; i < manifestacoes.size(); i++) {
+							if (manifestacoes.get(i).getCodigo() == codigo) {
+								JOptionPane.showMessageDialog(null, manifestacoes.get(i));
+							}
+						}
+					} else {
+						JOptionPane.showMessageDialog(null, "Código sem correspondencia a uma manifestação", "Alerta",
+								JOptionPane.ERROR_MESSAGE);
+					}
 				}
-				Thread.sleep(4000);
 
-			} else if (opcao == 4) {
-				System.out.println("Remova uma manifestação por código\n");
-				System.out.println("Entre com o código da manifestação: ");
-				int codigo = scanner.nextInt();
+			} else if (opcao.equals("Remover uma manifestação pelo código")) {
 
-				// tratamento de exceções
+				if (manifestacoes.isEmpty()) {
+					JOptionPane.showMessageDialog(null, "Adicione primeiro manifestações para remover", "Alerta",
+							JOptionPane.ERROR_MESSAGE);
 
-				manifestacoes.removeIf(p -> p.getCodigo() == codigo);
+				} else {
+					int codigo = Integer.parseInt(JOptionPane.showInputDialog("Entre com o código da manifestação: "));
 
-				System.out.println("Removido com sucesso.");
-				Thread.sleep(2000);
+					boolean temOuNaoTem = manifestacoes.stream().anyMatch(p -> p.getCodigo() == codigo);
 
-			} else if (opcao == 5) {
-				System.out.println("Fim do programa!");
+					if (temOuNaoTem) {
+						manifestacoes.removeIf(p -> p.getCodigo() == codigo);
+
+						JOptionPane.showMessageDialog(null, "Removido com sucesso.");
+					} else {
+						JOptionPane.showMessageDialog(null, "Código sem correspondencia a uma manifestação", "Alerta",
+								JOptionPane.ERROR_MESSAGE);
+					}
+				}
+
+			} else if (opcao.equals("Sair")) {
+				JOptionPane.showMessageDialog(null, "Fim do programa!");
 			}
 
 			else {
-				System.out.println("Opção inválida. Tente outra.");
-				Thread.sleep(1000);
+				JOptionPane.showMessageDialog(null, "Opção inválida. Tente outra.");
 			}
 
-		} while (opcao != 5);
-
-		scanner.close();
-
-	}
-
-	public static void Menu() {
-		System.out.println("Menu:");
-		System.out.println("1. Listar todas as manifestações");
-		System.out.println("2. Adicionar uma nova manifestação");
-		System.out.println("3. Pesquisar uma manifestação por código");
-		System.out.println("4. Remover uma manifestação pelo código");
-		System.out.println("5. Sair");
-		System.out.println("Escolha uma opção: ");
+		} while (!opcao.equals("Sair"));
 
 	}
 
